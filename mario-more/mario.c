@@ -8,7 +8,6 @@ int main(){
     } while (n<1 || n>8);
     show_pyramid(n);
     return 0;
-    return 0;
 }
 void show_pyramid(int n){
     int pattern = 1;
