@@ -1,11 +1,11 @@
 #include<stdio.h>
 void show_pyramid(int n);
 int main(){
-    int n;
+    int n=0;
    do {
     printf("%s", "Height: ");
     scanf("%d", &n);
-    } while (n<=0);
+    } while (n<1);
    show_pyramid(n);
     return 0;
 }
