@@ -1,40 +1,68 @@
 #include<stdio.h>
 #include<stdbool.h>
-int get_length(long card_num);
-bool checksum(long card_num, int len);
-void test_credit(long card_num);
+int get_len(long a);
+void check_valid(long card);
+bool checksum_validation(long card, int len);
+int get_starting_digits(long card);
 int main(){
-    long card_num = 4003600000000014;
-    printf("%ld\n", card_num);
-    int len = get_length(card_num);
-    checksum(card_num, len);
+    long card;
+    do{
+        printf("%s", "Number: ");
+        scanf("%ld", &card);
+    }while(card<0);
+    check_valid(card);
     return 0;
 }
-int get_length(long card_num){
-    int length = 0;
-    if(card_num==0){
-        return 1;
-    }
-    while(card_num!=0){
-        card_num /= 10;
-        length++;
-    }
-    return length;
+int get_len(long a){
+    int len = 0;
+    do{
+        len++;
+        a /= 10;
+    }while(a>0);
+    return len;
 }
-bool checksum(long card_num, int len){
-    char buff_card_num[len];
-    int sum_of_all = 0;
-    sprintf(buff_card_num, "%ld", card_num);
-    for(int i=1;i<=len;i++){
-        if(!(i%2)){
-            sum_of_all += (buff_card_num[i-1]-'0')*2;
+void check_valid(long card){
+    int card_len = get_len(card);
+    if(card_len!=13 && card_len!=15 && card_len!=16){
+        printf("%s\n", "INVALID");
+        return;
+    }
+    if(!checksum_validation(card, card_len)){
+        printf("%s\n", "INVALID");
+        return;
+    }
+    int starting_digits = get_starting_digits(card);
+    if((starting_digits==34 || starting_digits==37) && card_len==15){
+        printf("%s\n", "AMEX");
+    }else if((starting_digits>=40 && starting_digits<=49) && (card_len==13 || card_len==16)){
+        printf("%s\n", "VISA");
+    }else if((starting_digits>=51 && starting_digits<=55) && card_len==16){
+        printf("%s\n", "MASTERCARD");
+    }else{
+        printf("%s\n", "INVALID");
+    }
+};
+bool checksum_validation(long card, int len){
+    int sum=0;
+    for(int i=(len-1);i>=0;i--){
+        if((len%2==0) == (i%2==0)){
+            int temp = (card%10)*2;
+            if(temp<10){
+                sum+=temp;
+            }else{
+                sum+=temp/10;
+                sum+=temp%10;
+            }
         }else{
-            sum_of_all += buff_card_num[i-1]-'0';
+            sum+=card%10;
         }
+        card/=10;
     }
-    printf("%d\n", sum_of_all);
-    printf("%d\n", !(sum_of_all%10));
-    return !(sum_of_all%10);
-}
-void test_credit(long card_num){
-}
+    return (sum%10==0);
+};
+int get_starting_digits(long card){
+    do{
+        card /= 10;
+    }while(card>=100);
+    return card;
+};
